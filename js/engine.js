@@ -241,6 +241,7 @@ var Engine = (function(global) {
         canvasPlayer = doc.getElementById('choosePlayer').remove();
         pickingPlayer = false;
         player.setSprite(pick.x/101);
+        document.getElementById("life-ctl").style.display = 'inline-block';
     });
 })(this);
 

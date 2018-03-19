@@ -7,9 +7,15 @@ h1{
 	font-family: 'Raleway', sans-serif;
 }
 
-div{
-	display: flex;
-	align-items: center;
+#life-ctl{
+	width: 100%;
+	margin: 0 auto;
+	display: none;
+}
+
+img{
+	margin-top: 20px;
+	width: 40px;
 }
 
 #btn-start {

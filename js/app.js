@@ -29,7 +29,8 @@ class Enemy{
     	if(this.y == playerY){
     		if(this.x <= playerX+61 && this.x+101 >= playerX+40){
     			player.x = 202;
-    			player.y = 390;    			
+    			player.y = 390;
+    			player.lives-=1;    			
     		}
     	}
     }
@@ -40,10 +41,11 @@ class Enemy{
 // render() -> draws the player on the screen
 // handleInput() -> updates the Player position on the board
 class Player{
-	constructor(x,y){
+	constructor(x,y, lives){
 		this.sprite = 0;
 		this.x = x;
 		this.y = y;
+		this.lives = lives;
 	};
 
 	setSprite(pos){
@@ -52,6 +54,7 @@ class Player{
 
 	render(){
 		ctx.drawImage(Resources.get(rowPlayers[this.sprite]), this.x, this.y);
+		document.getElementById("lives").textContent = this.lives;
 	};
 
 	handleInput(key){
@@ -116,7 +119,7 @@ var rowPlayers = [
 
 // This initiate the Player and Enemies
 const pick = new characterPicker();
-const player = new Player(202,390);
+const player = new Player(202,390, 3);
 const allEnemies = [];
 for(let i=0; i<2; i++){
 	allEnemies.push(new Enemy(-101*(i+1),58));
