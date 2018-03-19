@@ -20,13 +20,22 @@ var Engine = (function(global) {
      */
     var doc = global.document,
         win = global.window,
+        canvasPlayer = doc.getElementById('choosePlayer'),
+        ctxPlayer = canvasPlayer.getContext('2d'),
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        pickingPlayer = true;
 
     canvas.width = 505;
     canvas.height = 606;
-    doc.body.appendChild(canvas);
+
+//    canvasPlayer.width = 505;
+//    canvasPlayer.height = 202;
+
+
+    //doc.body.appendChild(canvasPlayer);
+
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -41,11 +50,19 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
+        if(pickingPlayer){
+            selectMode();            
+        }
+        else{
+            render();
+        }
+
+
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
         update(dt);
-        render();
+        //render();
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -101,6 +118,27 @@ var Engine = (function(global) {
         });
     }
 
+    function selectMode(){
+        var rowPlayers = [
+            'images/char-boy.png',
+            'images/char-cat-girl.png',
+            'images/char-horn-girl.png',
+            'images/char-pink-girl.png',
+            'images/char-princess-girl.png'
+            ];
+
+        ctxPlayer.clearRect(0,0,canvasPlayer.width,canvasPlayer.height);
+
+        for(let i = 0; i < 5; i++){
+            ctxPlayer.drawImage(Resources.get('images/grass-block.png'), i*101, 0);
+        }
+        pick.render();
+        for(let i = 0; i < 5; i++){
+            ctxPlayer.drawImage(Resources.get(rowPlayers[i]), i*101, -50);
+        }
+
+    }
+
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -111,6 +149,9 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+        doc.body.appendChild(canvas);
+
+
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -174,11 +215,16 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
+        'images/selector.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 
@@ -187,4 +233,14 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.ctxPlayer = ctxPlayer;
+
+    document.getElementById("btn-start").addEventListener("click", function(){
+        document.getElementById("btn-start").remove();
+        document.querySelector("h1").remove();
+        canvasPlayer = doc.getElementById('choosePlayer').remove();
+        pickingPlayer = false;
+        player.setSprite(pick.x/101);
+    });
 })(this);
+

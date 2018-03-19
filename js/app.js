@@ -41,13 +41,19 @@ class Enemy{
 // handleInput() -> updates the Player position on the board
 class Player{
 	constructor(x,y){
-		this.sprite = 'images/char-boy.png';
+		this.sprite = 0;
 		this.x = x;
 		this.y = y;
 	};
+
+	setSprite(pos){
+		this.sprite = pos;
+	};
+
 	render(){
-		ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-	}
+		ctx.drawImage(Resources.get(rowPlayers[this.sprite]), this.x, this.y);
+	};
+
 	handleInput(key){
 		switch(key){
 			case 'left':
@@ -74,7 +80,42 @@ class Player{
 	}
 }
 
+class characterPicker{
+	constructor(){
+		this.sprite = 'images/selector.png';
+		this.x = 0;
+	}
+
+	render(){
+		ctxPlayer.drawImage(Resources.get(this.sprite), this.x, -40);
+	}
+
+	handleInput(key){
+		switch(key){
+			case 'left':
+				if(this.x > 0){
+					this.x -= 101;
+				}
+				break;
+			case 'right':
+				if(this.x < 404){
+					this.x += 101;
+				}			
+		}
+	}
+}
+
+var rowPlayers = [
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+];
+
+
 // This initiate the Player and Enemies
+const pick = new characterPicker();
 const player = new Player(202,390);
 const allEnemies = [];
 for(let i=0; i<2; i++){
@@ -92,6 +133,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
+    pick.handleInput(allowedKeys[e.keyCode]);
 });
