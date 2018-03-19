@@ -30,7 +30,11 @@ class Enemy{
     		if(this.x <= playerX+61 && this.x+101 >= playerX+40){
     			player.x = 202;
     			player.y = 390;
-    			player.lives-=1;    			
+    			if(player.lives > 0){
+    				player.lives-=1;
+    			}else{
+					document.getElementById("game-over").textContent = "You Lost!";
+    			}
     		}
     	}
     }
@@ -55,6 +59,9 @@ class Player{
 	render(){
 		ctx.drawImage(Resources.get(rowPlayers[this.sprite]), this.x, this.y);
 		document.getElementById("lives").textContent = this.lives;
+		if(this.y <= -25){
+			document.getElementById("game-over").textContent = "You Won!";			
+		}
 	};
 
 	handleInput(key){
