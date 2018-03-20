@@ -26,12 +26,10 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime,
         pickingPlayer = true;
+        let lvl = 0;
+        let width = 0;
+        let height = 0;
 
-    canvas.width = 505;
-    canvas.height = 606;
-
-//    canvasPlayer.width = 505;
-//    canvasPlayer.height = 202;
 
 
     //doc.body.appendChild(canvasPlayer);
@@ -54,7 +52,11 @@ var Engine = (function(global) {
             selectMode();            
         }
         else{
-            render();
+            resizeCanvas(lvl);
+            doc.body.appendChild(canvas);
+            ctx.clearRect(0,0,canvas.width,canvas.height)
+            gameDifficulty[lvl].call();
+            renderEntities();
         }
 
 
@@ -139,40 +141,92 @@ var Engine = (function(global) {
 
     }
 
+    function resizeCanvas(lvl){
+        switch(lvl){
+            case 0:
+                canvas.width = 505;
+                canvas.height = 606;
+                global.width = canvas.width;
+                global.height = canvas.height;
+                break;
+            default:
+                canvas.width = 808;
+                canvas.height = 909;
+                global.width = canvas.width;
+                global.height = canvas.height;
+                break;
+        }
+    }
+
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
      * they are flipbooks creating the illusion of animation but in reality
      * they are just drawing the entire screen over and over.
      */
-    function render() {
-        /* This array holds the relative URL to the image used
-         * for that particular row of the game level.
-         */
-        doc.body.appendChild(canvas);
-
-
-        var rowImages = [
+    const easy = function renderEasy() {
+        const rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
-            ],
-            numRows = 6,
-            numCols = 5,
-            row, col;
-        
+            ];
+        drawCanvas(rowImages, 6, 5);
         // Before drawing, clear existing canvas
-        ctx.clearRect(0,0,canvas.width,canvas.height)
-
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
+    }
+
+    const medium = function renderMed() {
+        const rowImages = [
+            'images/water-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/grass-block.png',
+            'images/grass-block.png'
+        ];
+        drawCanvas(rowImages, 9, 8);
+    }
+
+    const hard = function renderHard(){
+        const rowImages = [
+            'images/water-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/grass-block.png',
+            'images/grass-block.png'
+        ];
+        drawCanvas(rowImages, 9, 8);
+    }
+
+   const insane = function renderInsane(){
+        const rowImages = [
+            'images/water-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/stone-block.png',
+            'images/grass-block.png'
+        ];
+        drawCanvas(rowImages, 9, 8);
+    }
+
+    function drawCanvas(imgs, numRows, numCols){
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -180,11 +234,11 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+        for(let row = 0; row < numRows; row++){
+            for (let col=0; col < numCols; col++){
+                ctx.drawImage(Resources.get(imgs[row]), col*101, row*83);
             }
         }
-
-        renderEntities();
     }
 
     /* This function is called by the render function and is called on each game
@@ -198,6 +252,10 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+
+        obstacles.forEach(function(obstacle){
+            obstacle.render();
+        })
 
         player.render();
     }
@@ -216,6 +274,7 @@ var Engine = (function(global) {
      */
     Resources.load([
         'images/selector.png',
+        'images/Rock.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
@@ -232,16 +291,60 @@ var Engine = (function(global) {
      * object when run in a browser) so that developers can use it more easily
      * from within their app.js files.
      */
+
+    const gameDifficulty = [easy, medium, hard, insane];
     global.ctx = ctx;
     global.ctxPlayer = ctxPlayer;
+    global.lvl = lvl;
+    global.width = canvas.width;
+    global.height = canvas.height;
+
 
     document.getElementById("btn-start").addEventListener("click", function(){
         document.getElementById("btn-start").remove();
+        document.getElementById("game-level").remove();
         document.querySelector("h1").remove();
+        document.querySelector("h1").remove();        
         canvasPlayer = doc.getElementById('choosePlayer').remove();
         pickingPlayer = false;
         player.setSprite(pick.x/101);
         document.getElementById("life-ctl").style.display = 'inline-block';
     });
+
+    function removeClass(){
+        const btns = document.querySelectorAll('button');
+        for(btn of btns){
+            btn.classList.remove('selected');
+        }
+    }
+
+    document.getElementById("btn-easy").addEventListener("click", function(){
+        removeClass();
+        this.classList.add("selected");
+        lvl = 0;
+        global.lvl = lvl;
+    });
+
+    document.getElementById("btn-med").addEventListener("click", function(){
+        removeClass();
+        this.classList.add("selected");
+        lvl = 1;
+        global.lvl = lvl;
+    })
+
+    document.getElementById("btn-hard").addEventListener("click", function(){
+        removeClass();
+        this.classList.add("selected");
+        lvl = 2;
+        global.lvl = lvl;
+    })
+
+    document.getElementById("btn-insane").addEventListener("click", function(){
+        removeClass();
+        this.classList.add("selected");
+        lvl = 3;
+        global.lvl = lvl;
+    })
+
 })(this);
 

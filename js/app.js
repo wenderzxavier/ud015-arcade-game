@@ -8,18 +8,29 @@ class Enemy{
 	    this.sprite = 'images/enemy-bug.png';
 	    this.x = x;
 	    this.y = y;
-	    this.speed = Math.random()*(100 - 25) + 25;
+	    this.speed = Math.random()*(300 - 250) + 250;
     }
     update(dt){
 	// You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    	if(this.x > 505){ // Check if the enemy is out of the board, and restart position
-    		this.x = -101;
+    	switch(lvl){
+    		case 0:
+		    	if(this.x > 505){ // Check if the enemy is out of the board, and restart position
+			   		this.x = -101;
+    			}else{
+	    			this.x =this.x+this.speed*dt;
+    			}
+    			break;
+    		default:
+    			if(this.x > 808){
+    				this.x = -101;
+    			}else{
+    				this.x = this.x + this.speed*dt;
+    			}
+    			break;
     	}
-    	else{
-	    	this.x =this.x+this.speed*dt;
-    	}
+
     }
     render(){
     	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -28,12 +39,20 @@ class Enemy{
     checkCollision(playerX, playerY){
     	if(this.y == playerY){
     		if(this.x <= playerX+61 && this.x+101 >= playerX+40){
-    			player.x = 202;
-    			player.y = 390;
-    			if(player.lives > 0){
-    				player.lives-=1;
+    			if(lvl == 0){
+    				player.x = 303;
+    				player.y = 390;
     			}else{
-					document.getElementById("game-over").textContent = "You Lost!";
+    				player.x = 404;
+    				player.y = 639;
+    			}
+    			if(!win){
+	    			if(player.lives > 1){
+	    				player.lives-=1;
+	    			}else{
+	    				player.lives = 0;
+						document.getElementById("game-over").textContent = "You Lost!";
+	    			}    				
     			}
     		}
     	}
@@ -60,33 +79,55 @@ class Player{
 		ctx.drawImage(Resources.get(rowPlayers[this.sprite]), this.x, this.y);
 		document.getElementById("lives").textContent = this.lives;
 		if(this.y <= -25){
-			document.getElementById("game-over").textContent = "You Won!";			
+			if(player.lives > 0){
+				win = true;
+				document.getElementById("game-over").textContent = "You Won!";							
+			}
 		}
 	};
 
 	handleInput(key){
 		switch(key){
 			case 'left':
-				if(this.x > 0 ){
-					this.x-=101;					
+				if(this.x > 0){
+					if(!checkRock(this.x-101, this.y)) this.x-=101;
 				}
 				break;
 			case 'right':
-				if(this.x < 404){
-					this.x += 101;					
+				if(this.x < width-101){
+					if(!checkRock(this.x+101, this.y)) this.x+=101;
 				}
 				break;
 			case 'up':
 				if(this.y > -25){
-					this.y -=83;										
+					if(!checkRock(this.x, this.y-83))this.y-=83;
 				}
 				break;
 			case 'down':
-				if(this.y < 390){
-					this.y += 83;										
+				if(this.y < height-303){
+					if(!checkRock(this.x, this.y+83))this.y+=83;
 				}
 				break;
 		}
+	}
+}
+
+function checkRock(playerX, playerY){
+	for(rock of obstacles){
+		if(rock.x == playerX && rock.y == playerY){		
+			return true;
+		}
+	}
+}
+
+class Obstacle{
+	constructor(x, y){
+		this.x = x;
+		this.y = y;
+	}
+
+	render(){
+		ctx.drawImage(Resources.get('images/Rock.png'), this.x, this.y);
 	}
 }
 
@@ -123,16 +164,76 @@ var rowPlayers = [
     'images/char-princess-girl.png'
 ];
 
-
 // This initiate the Player and Enemies
+let win = false;
 const pick = new characterPicker();
-const player = new Player(202,390, 3);
+const player = new Player(303,390, 3);
 const allEnemies = [];
-for(let i=0; i<2; i++){
-	allEnemies.push(new Enemy(-101*(i+1),58));
-	allEnemies.push(new Enemy(-101*(i+1),141));
-	allEnemies.push(new Enemy(-101*(i+1),224));
-}
+const obstacles = [];
+document.getElementById("btn-start").addEventListener("click", function(){
+	switch(lvl){
+		case 0:
+			player.x = 303;
+			player.y = 390;
+			for(let i=0; i<2; i++){
+				allEnemies.push(new Enemy(Math.floor(Math.random()*4)*101,58));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*4)*101,141));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*4)*101,224));
+			}
+			break;
+		case 1:
+			player.x = 404;
+			player.y = 639;
+			for(let i=0; i<2; i++){
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,58));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,141));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,224));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,307));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,390));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,473));
+			}
+			break;
+		case 2:
+			player.x = 404;
+			player.y = 639;
+			for(let i=0; i<3; i++){
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,58));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,141));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,224));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,307));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,390));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,473));
+			}
+			for(let j=0; j<6; j++){
+				obstacles.push(new Obstacle(Math.floor(Math.random()*7)*101,(j*83)+58));
+				obstacles.push(new Obstacle(Math.floor(Math.random()*7)*101,(j*83)+58));
+				obstacles.push(new Obstacle(Math.floor(Math.random()*7)*101,(j*83)+58));
+			}
+			break;
+		case 3:
+			player.x = 404;
+			player.y = 639;
+			player.lives = 1;
+			for(let i=0; i<3; i++){
+//				allEnemies.push(new Enemy(-101*(i+1),58));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,141));
+//				allEnemies.push(new Enemy(-101*(i+1),224));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,307));
+//				allEnemies.push(new Enemy(-101*(i+1),390));
+				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,473));
+			}
+			for(let j=0; j<=6; j+=2){
+				let way = Math.floor(Math.random()*7);
+				for(let k=0; k<=7;k++){
+					if(k==way){
+						continue;
+					}
+					obstacles.push(new Obstacle(k*101,(j*83)+58));
+				}
+			}
+			break;
+	}
+});
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method.

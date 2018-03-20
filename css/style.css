@@ -18,6 +18,23 @@ img{
 	width: 40px;
 }
 
+button{
+	width: 126px;
+	color: white;
+	font-size: 18px;
+	margin-left: 2px;
+	height: 60px;
+	font-family: 'Raleway', sans-serif;
+	border: 2px solid white;
+	background-color: rgb(140, 164, 204);
+	box-shadow: 0 0 0 0px rgb(140, 164, 204), 0 0 0 2px rgb(140, 164, 204);
+}
+
+.selected{
+	background-color: rgb(57, 77, 112);
+	box-shadow: 0 0 0 0px rgb(57, 77, 112), 0 0 0 2px rgb(57, 77, 112);	
+}
+
 #btn-start {
 	-moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
