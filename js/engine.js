@@ -30,11 +30,6 @@ var Engine = (function(global) {
         let width = 0;
         let height = 0;
 
-
-
-    //doc.body.appendChild(canvasPlayer);
-
-
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -48,6 +43,10 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
+        /* Check wheter the has has picked or not its character.
+         * If picked, started drawing the canvas, otherwise, keep
+         * drawing the character options to user.
+        */
         if(pickingPlayer){
             selectMode();            
         }
@@ -64,7 +63,6 @@ var Engine = (function(global) {
          * our update function since it may be used for smooth animation.
          */
         update(dt);
-        //render();
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -114,12 +112,21 @@ var Engine = (function(global) {
         });
     }
 
+    /* This function is called by the update function and loops through all of the
+     * objects within allEnemies array defined in app.js and calls their checkCollision()
+     * methods. It will then verify if player has hit an enemy, and if true restart player
+     * position and decrease one player life.
+    */
     function checkCollisions(){
         allEnemies.forEach(function(enemy){
             enemy.checkCollision(player.x, player.y);
         });
     }
 
+    /* This function is called by the main function and loops showing the user the
+     * available characters to play the game. The canvas draw one row of grass, 
+     * followed by the available characters on the game.
+    */
     function selectMode(){
         var rowPlayers = [
             'images/char-boy.png',
@@ -141,6 +148,11 @@ var Engine = (function(global) {
 
     }
 
+    /* This function is called by the main function after the user picked a character and
+     * choose the game difficulty. The canvas for easy mode is different for med/hard/insane
+     * mode. This function verifies the selected game level and draw the game assigning the width
+     * and height to global variables to be accessed by the app.js
+    */
     function resizeCanvas(lvl){
         switch(lvl){
             case 0:
@@ -158,11 +170,8 @@ var Engine = (function(global) {
         }
     }
 
-    /* This function initially draws the "game level", it will then call
-     * the renderEntities function. Remember, this function is called every
-     * game tick (or loop of the game engine) because that's how games work -
-     * they are flipbooks creating the illusion of animation but in reality
-     * they are just drawing the entire screen over and over.
+    /* The following functions define the "game level" features and then call
+     * the drawCanvas responsible for drawing the game.
      */
     const easy = function renderEasy() {
         const rowImages = [
@@ -174,11 +183,6 @@ var Engine = (function(global) {
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ];
         drawCanvas(rowImages, 6, 5);
-        // Before drawing, clear existing canvas
-        /* Loop through the number of rows and columns we've defined above
-         * and, using the rowImages array, draw the correct image for that
-         * portion of the "grid"
-         */
     }
 
     const medium = function renderMed() {
@@ -232,7 +236,11 @@ var Engine = (function(global) {
                  * to start drawing and the y coordinate to start drawing.
                  * We're using our Resources helpers to refer to our images
                  * so that we get the benefits of caching these images, since
-                 * we're using them over and over.
+                 * we're using them over and over. Remember, this function 
+                 * is called every game tick (or loop of the game engine) because 
+                 * that's how games work - they are flipbooks creating the 
+                 * illusion of animation but in reality they are just drawing 
+                 * the entire screen over and over.
                  */
         for(let row = 0; row < numRows; row++){
             for (let col=0; col < numCols; col++){
@@ -291,7 +299,6 @@ var Engine = (function(global) {
      * object when run in a browser) so that developers can use it more easily
      * from within their app.js files.
      */
-
     const gameDifficulty = [easy, medium, hard, insane];
     global.ctx = ctx;
     global.ctxPlayer = ctxPlayer;
@@ -299,7 +306,10 @@ var Engine = (function(global) {
     global.width = canvas.width;
     global.height = canvas.height;
 
-
+    /* This eventListener starts the game, removing the character selection
+     * draw and difficult buttons. Then draws the canvas with the corresponding
+     * properties.
+    */
     document.getElementById("btn-start").addEventListener("click", function(){
         document.getElementById("btn-start").remove();
         document.getElementById("game-level").remove();
@@ -311,6 +321,9 @@ var Engine = (function(global) {
         document.getElementById("life-ctl").style.display = 'inline-block';
     });
 
+    /* This function insert and remove class for the difficult buttons, and set
+     * the chosen level for the game passing it as a global variable. 
+    */
     function removeClass(){
         const btns = document.querySelectorAll('button');
         for(btn of btns){

@@ -1,8 +1,10 @@
-// Enemies our player must avoid
-// constructor(x,y) -> initiates the enemy with given x and y position, the correspondent image and generate random speed
-// update(dt) -> update enemy position with a time delta between ticks (dt)
-// render() -> draw the enemy on the screen
-// checkCollision(playerX, playerY) -> verify if the player hit the enemy and restart game
+/* Enemies our player must avoid
+ * constructor(x,y) -> initiates the enemy with given x and y position, the correspondent image and generate random speed
+ * update(dt) -> update enemy position with a time delta between ticks (dt)
+ * render() -> draw the enemy on the screen
+ checkCollision(playerX, playerY) -> verify if the player hit the enemy and restart game
+*/
+
 class Enemy{
     constructor(x, y){
 	    this.sprite = 'images/enemy-bug.png';
@@ -10,10 +12,13 @@ class Enemy{
 	    this.y = y;
 	    this.speed = Math.random()*(300 - 250) + 250;
     }
+	/* You should multiply any movement by the dt parameter
+     * which will ensure the game runs at the same speed for
+     * all computers.
+     * This method verifies the game level in order to verifies whether the 
+     * enemy must be reseted on the board.
+    */
     update(dt){
-	// You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     	switch(lvl){
     		case 0:
 		    	if(this.x > 505){ // Check if the enemy is out of the board, and restart position
@@ -36,14 +41,16 @@ class Enemy{
     	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
+    /* This method handles the collision between enemy and player, and
+     * depending on the collision if player runs out of lives, he modify
+     * the text on the screen stating the lost.
+    */
     checkCollision(playerX, playerY){
     	if(this.y == playerY){
     		if(this.x <= playerX+61 && this.x+101 >= playerX+40){
     			if(lvl == 0){
-    				player.x = 303;
     				player.y = 390;
     			}else{
-    				player.x = 404;
     				player.y = 639;
     			}
     			if(!win){
@@ -51,7 +58,7 @@ class Enemy{
 	    				player.lives-=1;
 	    			}else{
 	    				player.lives = 0;
-						document.getElementById("game-over").textContent = "You Lost!";
+						document.getElementById("game-over").textContent = "Game Over - You Lost!";
 	    			}    				
     			}
     		}
@@ -75,6 +82,9 @@ class Player{
 		this.sprite = pos;
 	};
 
+	/* This method rendes the player position on the board. If player reaches
+	 * the water position, it alters the text on the screen for "Win".
+	*/
 	render(){
 		ctx.drawImage(Resources.get(rowPlayers[this.sprite]), this.x, this.y);
 		document.getElementById("lives").textContent = this.lives;
@@ -86,6 +96,10 @@ class Player{
 		}
 	};
 
+	/* This method verify handle when a key is pressed on the keyboard checking
+	 * if the movement can be performed or not (rock or out of boards are not 
+	 * possible movements).
+	*/
 	handleInput(key){
 		switch(key){
 			case 'left':
@@ -111,15 +125,18 @@ class Player{
 		}
 	}
 }
-
-function checkRock(playerX, playerY){
-	for(rock of obstacles){
-		if(rock.x == playerX && rock.y == playerY){		
-			return true;
+	/* This function verify if the player is trying to move to rock positions
+	 * where it is not possible. 
+	*/
+	function checkRock(playerX, playerY){
+		for(rock of obstacles){
+			if(rock.x == playerX && rock.y == playerY){		
+				return true;
+			}
 		}
 	}
-}
 
+// Obstacle (rock) Class
 class Obstacle{
 	constructor(x, y){
 		this.x = x;
@@ -131,6 +148,7 @@ class Obstacle{
 	}
 }
 
+// Character Picker Class
 class characterPicker{
 	constructor(){
 		this.sprite = 'images/selector.png';
@@ -141,6 +159,7 @@ class characterPicker{
 		ctxPlayer.drawImage(Resources.get(this.sprite), this.x, -40);
 	}
 
+	// This method handles the alternate positions between characters
 	handleInput(key){
 		switch(key){
 			case 'left':
@@ -164,12 +183,17 @@ var rowPlayers = [
     'images/char-princess-girl.png'
 ];
 
-// This initiate the Player and Enemies
+// This initiate the Player, Character Picker, obstacles (empty) and enemies (empty)
 let win = false;
 const pick = new characterPicker();
 const player = new Player(303,390, 3);
 const allEnemies = [];
 const obstacles = [];
+
+/* This method handles when the "Start" button is pressed. It check the selected
+ * level and start positioning enemies,players and rocks according to the level.
+ * Level 0 = Easy; Level 1 = Medium; Level 2 = Hard; Level 3 = Insane.
+*/
 document.getElementById("btn-start").addEventListener("click", function(){
 	switch(lvl){
 		case 0:
@@ -222,6 +246,7 @@ document.getElementById("btn-start").addEventListener("click", function(){
 //				allEnemies.push(new Enemy(-101*(i+1),390));
 				allEnemies.push(new Enemy(Math.floor(Math.random()*7)*101,473));
 			}
+			// Place rock on all row except for one position (way)
 			for(let j=0; j<=6; j+=2){
 				let way = Math.floor(Math.random()*7);
 				for(let k=0; k<=7;k++){
