@@ -1,6 +1,20 @@
-frontend-nanodegree-arcade-game
+Udacity015 - Object-Oriented Javascript
 ===============================
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+![Game Characters](/images/characters.png)
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+This is a frogger game made for the final project of an Object-Oriented JavaScript course offered by Udacity (https://www.udacity.com/course/object-oriented-javascript--ud015). I am very excited to share it with you all and I hope you will enjoy the game as much as I did making it!
+
+## Installation Instructions
+
+Click on the "Clone or Download" link and download the repository as a ZIP file. Extract the contents and "right-click" on the index.html file and open with your favorite browser (preferably Google Chrome) to play!
+
+## How to Play
+
+Pick you Character -> Choose the game difficulty -> Start the game -> Have Fun!
+
+Arrow Keys : Moves the character around.
+
+You must reach the reaver and do not hit the bugs.
+
+![Game Board](/images/game.png)
